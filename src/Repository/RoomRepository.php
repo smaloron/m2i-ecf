@@ -27,28 +27,28 @@ class RoomRepository extends ServiceEntityRepository
    */
   public function getAvailability($search)
   {
-    $fromDate = $search["arrivalDate"];
-    $toDate = $search["departureDate"];
+    $fromDate = date_format($search["arrivalDate"],"Y-m-d");
+    $toDate = date_format($search["departureDate"],"Y-m-d");
     $guests = $search["numberOfGuests"];
 
-    // search for a room
-    // with a capacity superior or equal to the number of guest
-    // and with compatible dates
-    $qb = $this->createQueryBuilder("room")
-      ->select("room")
-      ->andWhere("room.capacity >= :guests")
-      ->setParameter("guests", $guests)
-      ->join("room.hotel", "hotel")
-      ->leftJoin("room.bookings","b")
-      ->andWhere("b.arrivalDate not between :from and :to")
-      ->andWhere("b.departureDate not between :from and :to")
-      ->andWhere(":from not between b.arrivalDate and b.departureDate")
+    $qb1 = $this->createQueryBuilder("booking")
+      ->select("booking.room")
+      ->orWhere("booking.arrivalDate between :from and :to")
+      ->orWhere("booking.departureDate between :from and :to")
       ->setParameter("from", $fromDate)
       ->setParameter("to", $toDate)
-      ->orderBy("hotel.name")
     ;
 
-    return $qb->getQuery()->getResult();
+    $qb2 = $this->createQueryBuilder("room");
+    $qb2
+      ->select("room")
+      ->join("room.hotel","hotel")
+      ->andWhere("room.capacity >= :guests")
+      ->setParameter("guests", $guests)
+      ->andWhere($qb2->expr()->notIn("id", $qb1->getDQL()))
+    ;
+
+    return $qb2->getQuery()->getResult();
   }
 
   // /**

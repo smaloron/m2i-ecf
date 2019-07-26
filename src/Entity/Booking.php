@@ -18,7 +18,7 @@ class Booking
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Guest", inversedBy="bookings")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Guest", inversedBy="bookings", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $guest;
