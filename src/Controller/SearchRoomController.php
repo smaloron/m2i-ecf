@@ -26,7 +26,6 @@ class SearchRoomController extends AbstractController
     $searchResult = [];
     if($form->isSubmitted() && $form->isValid()){
       $searchResult = $repository->getAvailability($form->getData());
-      dump($form);
     }
 
     return $this->render('search_room/index.html.twig', [

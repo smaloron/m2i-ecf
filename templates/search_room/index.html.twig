@@ -43,9 +43,9 @@
           <a class="btn btn-dark" href="#">Détails...</a>
           <a class="btn btn-success" href="{{ path('book_room',
             { 'id': room.id,
-              'from': '',
-              'to': '',
-              'guests': ''
+              'from': form.vars.value.arrivalDate | date('Ymd'),
+              'to': form.vars.value.departureDate | date('Ymd'),
+              'guests': form.vars.value.numberOfGuests
             }) }}">Réserver</a>
         </td>
       </tr>
