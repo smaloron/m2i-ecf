@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Boo king!{% endblock %}
+
+{% block body %}
+
+
+<div class="example-wrapper">
+    <h1> Bienvenue sur Boo King , le roi de la Boo</h1>
+
+</div>
+    <div>
+        {% for room in rooms %}
+         <div> chambre n° {{ room.roomNumber }}</div>
+        {% endfor %}
+    </div>
+{% endblock %}
