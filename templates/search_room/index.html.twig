@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche d'une chambre{% endblock %}
+
+{% form_theme form 'bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block body %}
+
+  <h1>Recherche de chambre</h1>
+  {{ form_start(form) }}
+
+  <div class="row mt-2">
+    <div class="col-md-2">
+      {{ form_row(form.arrivalDate) }}
+    </div>
+    <div class="col-md-2">
+      {{ form_row(form.departureDate) }}
+    </div>
+    <div class="col-md-2 col-form-label">Nombre de personnes</div>
+    <div class="col-md-2">
+      {{ form_widget(form.numberOfGuests) }}
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">Rechercher</button>
+    </div>
+  </div>
+  {{ form_end(form) }}
+
+  <table class="table table-bordered table-hover table-striped">
+    <thead>
+    <tr class="text-center">
+      <th>Hotel</th>
+      <th>Tarif</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for room in rooms %}
+      <tr>
+        <td>{{ room.hotel.name }} - {{ room.hotel.address }}</td>
+        <td class="text-right">{{ room.rate | number_format(2, ',', '.') }}</td>
+        <td>
+          <a class="btn btn-dark" href="#">Détails...</a>
+          <a class="btn btn-success" href="{{ path('book_room',
+            { 'id': room.id,
+              'from': '',
+              'to': '',
+              'guests': ''
+            }) }}">Réserver</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock %}
