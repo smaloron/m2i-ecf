@@ -19,6 +19,25 @@ class BookingRepository extends ServiceEntityRepository
         parent::__construct($registry, Booking::class);
     }
 
+    public function getBooked($search)
+    {
+      // get the criteria from the search form
+      $fromDate = date_format($search["arrivalDate"],"Y-m-d");
+      $toDate = date_format($search["departureDate"],"Y-m-d");
+
+      // get the rooms that are booked for the period
+      $booked = $this->createQueryBuilder("b")
+        ->select('identity(b.room)')
+        ->orWhere("b.arrivalDate between :from and :to")
+        ->orWhere("b.departureDate between :from and :to")
+        ->setParameter("from", $fromDate)
+        ->setParameter("to", $toDate)
+      ;
+
+      return $booked->getQuery()->getResult();
+
+    }
+
     // /**
     //  * @return Booking[] Returns an array of Booking objects
     //  */

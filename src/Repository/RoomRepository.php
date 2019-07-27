@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Booking;
 use App\Entity\Room;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -19,37 +20,34 @@ class RoomRepository extends ServiceEntityRepository
     parent::__construct($registry, Room::class);
   }
 
-  /**
-   * Return a list of available rooms
-   * for the search criteria (dates and number of guests)
-   * @param $search
-   * @return mixed
-   */
-  public function getAvailability($search)
+  public function getAvailable($search, $booked)
   {
-    $fromDate = date_format($search["arrivalDate"],"Y-m-d");
-    $toDate = date_format($search["departureDate"],"Y-m-d");
+
+    // get the criteria from the search form
     $guests = $search["numberOfGuests"];
 
-    $qb1 = $this->createQueryBuilder("booking")
-      ->select("booking.room")
-      ->orWhere("booking.arrivalDate between :from and :to")
-      ->orWhere("booking.departureDate between :from and :to")
-      ->setParameter("from", $fromDate)
-      ->setParameter("to", $toDate)
-    ;
+    // build an array out of the funky booked result
+    $bookedRooms = [];
+    foreach ($booked as $bookedArray)
+    {
+      foreach($bookedArray as $item => $value)
+      {
+        array_push($bookedRooms, $value);
+      }
+    }
 
-    $qb2 = $this->createQueryBuilder("room");
-    $qb2
+    $qb = $this->createQueryBuilder("room");
+    $qb
       ->select("room")
       ->join("room.hotel","hotel")
       ->andWhere("room.capacity >= :guests")
       ->setParameter("guests", $guests)
-      ->andWhere($qb2->expr()->notIn("id", $qb1->getDQL()))
+      ->andWhere($qb->expr()->notIn("room.id", $bookedRooms))
     ;
 
-    return $qb2->getQuery()->getResult();
+    return $qb->getQuery()->getResult();
   }
+
 
   // /**
   //  * @return Room[] Returns an array of Room objects
