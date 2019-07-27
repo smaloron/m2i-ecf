@@ -36,6 +36,7 @@ class RoomRepository extends ServiceEntityRepository
       }
     }
 
+    // get the rooms that are not booked for the period
     $qb = $this->createQueryBuilder("room");
     $qb
       ->select("room")

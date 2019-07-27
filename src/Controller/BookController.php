@@ -26,10 +26,13 @@ class BookController extends AbstractController
 
     $booking = new Booking();
 
+    // get the dates and number of guests from the query string bag
     $from = $request->query->get("from");
     $to = $request->query->get("to");
     $guests = $request->query->get("guests");
 
+    // build the booking form
+    // passing known data in the options array
     $form = $this->createForm(BookingType::class, $booking,
       [
         "from" => new \DateTime($from),
@@ -40,14 +43,18 @@ class BookController extends AbstractController
 
     $form->handleRequest($request);
 
+    // submitting a new booking ?
     if ($form->isSubmitted() && $form->isValid()) {
 
+      // hydrate Booking entity from the request and form data
       $booking = $form->getData();
       $booking->setRoom($room);
 
+      // persist booking and guest
       $manager->persist($booking);
       $manager->flush();
 
+      // return to search page
       return $this->redirectToRoute("search_room");
     }
 
